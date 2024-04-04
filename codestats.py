@@ -10,10 +10,11 @@ Copyright (C) 2024 Ray Mentose.
 
 Usage:
 --
-  codestats      arg1          arg2
-  ---------      ----          ----
+  codestats      arg1          arg2              arg3
+  ---------      ----          ----              ----
   codestats      project-dir   .py
   codestats      project-dir   .py,.md,.js,.cc
+  codestats      project-dir   .py,.md,.js,.cc   git
 
   codestats      man|help|-h|--help|-v
 
@@ -45,12 +46,14 @@ def preserve_keys(data, pres):
     resp.append({key: d[key] for key in pres if key in d})
   return resp
 
-def process_codestats(dir, exts):
+def process_codestats(dir, exts, git_opt=''):
   """Get code stats for project directory (dir) and file extensions (exts)"""
   # dir = os.path.abspath(os.path.expanduser(dir))
 
   grep_exts = "-e '" + "$' -e '".join(re.sub('\\.','\\.',exts).strip(',').split(',')) + "$'"
-  cmd = f"cd {dir} && git ls-files | grep {grep_exts} | sed 's| |\\\\ |g' | xargs wc -l"
+  find_cmd  = 'git ls-files' if git_opt == 'git' else 'find . -type f'
+
+  cmd = f"cd {dir} && {find_cmd} | grep {grep_exts} | sed 's| |\\\\ |g' | xargs wc -l"
 
   try:
     out = check_output(cmd, shell=True, encoding='utf-8')
@@ -70,8 +73,8 @@ def main():
   elif sys.argv[1] in ('-v','--version'):
     print(f'Version: {v}')
 
-  elif len(sys.argv) == 3:
-    process_codestats(sys.argv[1], sys.argv[2])
+  elif len(sys.argv) > 2:
+    process_codestats(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else '')
 
   elif len(sys.argv) == 2:
     print('Please also specify file extensions: .py,.md etc. For details see help.')
