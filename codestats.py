@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-# codestats - Code Stats
-# Copyright (C) 2024 Ray Mentose.
-
 v = '0.0.1'
 man = """
 codestats - Code Stats
-Copyright (C) 2024 Ray Mentose.
+Copyright (C) 2024 Ray (github.com/ryt)
 
 Usage:
 --
